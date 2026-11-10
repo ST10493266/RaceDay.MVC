@@ -5,8 +5,6 @@ handling. It has no database access, no business logic and no Azure SDK.
 
 ## Run with Docker (single command)
 
-The Part 2 API must already be running and reachable. Replace the URL with wherever your API is hosted.
-
 ```bash
 docker build -t raceday-mvc . && docker run --rm -p 8080:8080 --add-host=host.docker.internal:host-gateway -e Api__BaseUrl=http://host.docker.internal:5000/ raceday-mvc
 ```
@@ -42,7 +40,7 @@ The container and the local run behave the same. Only the base URL differs, and 
 **Organiser:** Dashboard, My events (create, edit, delete, banner upload), Categories, Enrolments, Results entry.
 **Participant:** Find events (filters), Event details + enrol, My enrolments, My results, Profile (picture upload).
 
-## Connecting to your Part 2 API
+## Connecting to Part 2 API
 
 Every URL is in one place: `ApiRoutes` in `Services/RaceDayApi.cs`. Every JSON shape is in `Models/ApiModels.cs`
 (property matching is case-insensitive). If your API differs, change those two files and nothing else.
