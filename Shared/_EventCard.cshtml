@@ -1,0 +1,21 @@
+@model EventDto
+<article class="rd-event-card h-100">
+    <div class="rd-event-media">
+        @if (!string.IsNullOrWhiteSpace(Model.BannerUrl))
+        {
+            <img src="@Model.BannerUrl" alt="Banner for @Model.Name" loading="lazy" />
+        }
+        else
+        {
+            <div class="rd-event-placeholder" aria-hidden="true"></div>
+        }
+        <partial name="_Bib" model="Model.EventDate" />
+    </div>
+    <div class="rd-event-body">
+        <div class="rd-event-type">@Model.EventType</div>
+        <h2 class="rd-event-title">@Model.Name</h2>
+        <p class="rd-event-meta">@Model.Location &middot; @Fmt.Distance(Model.DistanceKm)</p>
+        <p class="rd-event-meta">@Fmt.DateTimeLong(Model.EventDate)</p>
+        <a class="btn btn-rd-primary btn-sm mt-auto" asp-controller="Participant" asp-action="Details" asp-route-id="@Model.Id">View event</a>
+    </div>
+</article>

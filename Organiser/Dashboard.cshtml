@@ -1,0 +1,81 @@
+@model DashboardVm
+@{ ViewData["Title"] = "Dashboard"; }
+<div class="rd-pagehead d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+        <h1 class="rd-h1">Dashboard</h1>
+        <p class="text-muted mb-0">How your events are doing.</p>
+    </div>
+    <a asp-action="CreateEvent" class="btn btn-rd-primary">New event</a>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-6 col-lg-3"><div class="rd-stat"><span class="rd-stat-num">@Model.TotalEvents</span><span class="rd-stat-label">Events created</span></div></div>
+    <div class="col-6 col-lg-3"><div class="rd-stat"><span class="rd-stat-num">@Model.TotalEnrolments</span><span class="rd-stat-label">Total enrolments</span></div></div>
+    <div class="col-6 col-lg-3"><div class="rd-stat"><span class="rd-stat-num">@Model.Upcoming.Count</span><span class="rd-stat-label">Upcoming events</span></div></div>
+    <div class="col-6 col-lg-3">
+        <div class="rd-stat">
+            <span class="rd-stat-num rd-stat-date">@(Model.Upcoming.Count > 0 ? Model.Upcoming[0].EventDate.ToString("d MMM") : "None")</span>
+            <span class="rd-stat-label">Next event date</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-7">
+        <div class="rd-panel p-0">
+            <div class="rd-panel-head"><h2 class="rd-h3 mb-0">Enrolments per event</h2></div>
+            @if (Model.Events.Count == 0)
+            {
+                <div class="p-4 text-muted">You haven't created an event yet. <a asp-action="CreateEvent">Create your first one.</a></div>
+            }
+            else
+            {
+                var max = Math.Max(1, Model.Events.Max(e => e.EnrolmentCount));
+                <div class="table-responsive">
+                    <table class="table rd-table align-middle mb-0">
+                        <thead><tr><th scope="col">Event</th><th scope="col">Date</th><th scope="col" style="width:35%">Enrolments</th></tr></thead>
+                        <tbody>
+                        @foreach (var e in Model.Events.OrderByDescending(x => x.EventDate))
+                        {
+                            <tr>
+                                <td><a asp-action="Enrolments" asp-route-eventId="@e.Id" class="fw-semibold">@e.Name</a></td>
+                                <td>@Fmt.Date(e.EventDate)</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rd-bar" role="img" aria-label="@e.EnrolmentCount enrolments"><span style="width:@(e.EnrolmentCount * 100 / max)%"></span></div>
+                                        <span class="fw-semibold">@e.EnrolmentCount</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="rd-panel p-0">
+            <div class="rd-panel-head"><h2 class="rd-h3 mb-0">Upcoming dates</h2></div>
+            @if (Model.Upcoming.Count == 0)
+            {
+                <div class="p-4 text-muted">No upcoming events scheduled.</div>
+            }
+            else
+            {
+                <ul class="rd-datelist">
+                    @foreach (var e in Model.Upcoming.Take(6))
+                    {
+                        <li>
+                            <partial name="_Bib" model="e.EventDate" />
+                            <div>
+                                <div class="fw-semibold">@e.Name</div>
+                                <div class="small text-muted">@e.Location &middot; @Fmt.Distance(e.DistanceKm)</div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

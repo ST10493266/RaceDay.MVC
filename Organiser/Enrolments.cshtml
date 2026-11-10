@@ -1,0 +1,39 @@
+@model EventEnrolmentsVm
+@{ ViewData["Title"] = "Enrolments"; }
+<a asp-action="Events" class="small">&larr; Back to my events</a>
+<div class="rd-pagehead mt-2 d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+        <h1 class="rd-h1">Enrolments</h1>
+        <p class="text-muted mb-0">@Model.Event.Name &middot; @Fmt.Date(Model.Event.EventDate) &middot; @Model.Enrolments.Count @(Model.Enrolments.Count == 1 ? "runner" : "runners")</p>
+    </div>
+    <a asp-action="Results" asp-route-eventId="@Model.Event.Id" class="btn btn-outline-dark">Enter results</a>
+</div>
+
+@if (Model.Enrolments.Count == 0)
+{
+    <div class="rd-empty">
+        <h2 class="rd-h2">No one has enrolled yet</h2>
+        <p class="text-muted mb-0">Enrolments appear here as runners sign up.</p>
+    </div>
+}
+else
+{
+    <div class="rd-panel p-0">
+        <div class="table-responsive">
+            <table class="table rd-table align-middle mb-0">
+                <thead><tr><th scope="col">Participant</th><th scope="col">Email</th><th scope="col">Category</th><th scope="col">Status</th></tr></thead>
+                <tbody>
+                @foreach (var en in Model.Enrolments)
+                {
+                    <tr>
+                        <td class="fw-semibold">@en.ParticipantName</td>
+                        <td>@en.ParticipantEmail</td>
+                        <td>@en.CategoryName</td>
+                        <td><partial name="_Status" model="en.Status" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,28 @@
+@{
+    Layout = "_Base";
+    ViewData["BodyClass"] = "role-organiser";
+    var name = Context.Session.CurrentName();
+    var action = (ViewContext.RouteData.Values["action"] as string) ?? "";
+    string Active(params string[] actions) => actions.Contains(action, StringComparer.OrdinalIgnoreCase) ? "active" : "";
+}
+<div class="rd-shell">
+    <aside class="rd-sidebar">
+        <a class="rd-brand" asp-controller="Organiser" asp-action="Dashboard"><span class="rd-brand-mark"></span>RaceDay</a>
+        <div class="rd-sidebar-role">Organiser console</div>
+        <nav class="nav flex-column rd-sidenav" aria-label="Organiser navigation">
+            <a class="nav-link @Active("Dashboard")" asp-controller="Organiser" asp-action="Dashboard">Dashboard</a>
+            <a class="nav-link @Active("Events", "EditEvent", "Categories", "Enrolments", "Results")" asp-controller="Organiser" asp-action="Events">My events</a>
+            <a class="nav-link @Active("CreateEvent")" asp-controller="Organiser" asp-action="CreateEvent">New event</a>
+        </nav>
+        <div class="rd-sidebar-foot">
+            <div class="small text-white-50 mb-2">@name</div>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                <button type="submit" class="btn btn-outline-light btn-sm w-100">Log out</button>
+            </form>
+        </div>
+    </aside>
+    <main class="rd-content">
+        <partial name="_Flash" />
+        @RenderBody()
+    </main>
+</div>

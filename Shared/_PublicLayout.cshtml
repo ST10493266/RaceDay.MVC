@@ -1,0 +1,24 @@
+@{
+    Layout = "_Base";
+    var signedIn = Context.Session.IsSignedIn();
+}
+<header class="rd-public-bar">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="rd-brand" asp-controller="Home" asp-action="Index"><span class="rd-brand-mark"></span>RaceDay</a>
+        @if (signedIn)
+        {
+            <a class="btn btn-rd-primary btn-sm" asp-controller="Home" asp-action="Index">Go to my account</a>
+        }
+        else
+        {
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-light btn-sm" asp-controller="Account" asp-action="Login">Log in</a>
+                <a class="btn btn-rd-primary btn-sm" asp-controller="Account" asp-action="Register">Create account</a>
+            </div>
+        }
+    </div>
+</header>
+<main class="container rd-main">
+    <partial name="_Flash" />
+    @RenderBody()
+</main>

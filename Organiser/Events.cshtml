@@ -1,0 +1,74 @@
+@model List<EventDto>
+@{ ViewData["Title"] = "My events"; }
+<div class="rd-pagehead d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+        <h1 class="rd-h1">My events</h1>
+        <p class="text-muted mb-0">Create, edit and manage the races you run.</p>
+    </div>
+    <a asp-action="CreateEvent" class="btn btn-rd-primary">New event</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="rd-empty">
+        <h2 class="rd-h2">No events yet</h2>
+        <p class="text-muted">Create an event, add its categories, then open it for entries.</p>
+        <a asp-action="CreateEvent" class="btn btn-rd-primary">Create your first event</a>
+    </div>
+}
+else
+{
+    <div class="rd-panel p-0">
+        <div class="table-responsive">
+            <table class="table rd-table align-middle mb-0">
+                <thead>
+                    <tr><th scope="col">Event</th><th scope="col">Date</th><th scope="col">Location</th><th scope="col">Distance</th><th scope="col">Enrolled</th><th scope="col" class="text-end">Manage</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                @if (!string.IsNullOrWhiteSpace(e.BannerUrl))
+                                {
+                                    <img src="@e.BannerUrl" alt="" class="rd-thumb" />
+                                }
+                                else
+                                {
+                                    <div class="rd-thumb rd-event-placeholder" aria-hidden="true"></div>
+                                }
+                                <div><div class="fw-semibold">@e.Name</div><div class="small text-muted">@e.EventType</div></div>
+                            </div>
+                        </td>
+                        <td>@Fmt.Date(e.EventDate)</td>
+                        <td>@e.Location</td>
+                        <td>@Fmt.Distance(e.DistanceKm)</td>
+                        <td>@e.EnrolmentCount</td>
+                        <td class="text-end text-nowrap">
+                            <a asp-action="EditEvent" asp-route-id="@e.Id" class="btn btn-outline-dark btn-sm">Edit</a>
+                            <a asp-action="Categories" asp-route-eventId="@e.Id" class="btn btn-outline-dark btn-sm">Categories</a>
+                            <a asp-action="Enrolments" asp-route-eventId="@e.Id" class="btn btn-outline-dark btn-sm">Enrolments</a>
+                            <a asp-action="Results" asp-route-eventId="@e.Id" class="btn btn-outline-dark btn-sm">Results</a>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#del-@e.Id">Delete</button>
+
+                            <div class="modal fade text-start" id="del-@e.Id" tabindex="-1" aria-labelledby="del-title-@e.Id" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header"><h2 class="modal-title fs-5" id="del-title-@e.Id">Delete this event?</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                                        <div class="modal-body">"@e.Name" and its categories will be removed. This can't be undone.</div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Keep event</button>
+                                            <form asp-action="DeleteEvent" asp-route-id="@e.Id" method="post" class="m-0"><button type="submit" class="btn btn-danger">Delete event</button></form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

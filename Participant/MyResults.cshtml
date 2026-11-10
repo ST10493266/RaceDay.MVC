@@ -1,0 +1,35 @@
+@model List<ResultDto>
+@{ ViewData["Title"] = "My results"; }
+<div class="rd-pagehead">
+    <h1 class="rd-h1">My results</h1>
+    <p class="text-muted mb-0">Your race history across every finished event you entered.</p>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="rd-empty">
+        <h2 class="rd-h2">No results yet</h2>
+        <p class="text-muted mb-0">Results show up here once an organiser publishes them after your event.</p>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var r in Model)
+        {
+            <div class="col-12 col-md-6">
+                <article class="rd-result">
+                    <div class="rd-result-pos">
+                        <span class="rd-result-num">@Fmt.Ordinal(r.Position)</span>
+                        <span class="rd-result-of">of @r.TotalFinishers finishers</span>
+                    </div>
+                    <div class="rd-result-body">
+                        <h2 class="rd-h3">@r.EventName</h2>
+                        <p class="mb-1 text-muted">@Fmt.Date(r.EventDate)@(string.IsNullOrWhiteSpace(r.CategoryName) ? "" : " · " + r.CategoryName)</p>
+                        <p class="rd-result-time mb-0">@r.FinishTime</p>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}

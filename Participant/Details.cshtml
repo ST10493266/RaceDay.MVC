@@ -1,0 +1,80 @@
+@model EventDetailsVm
+@{
+    var e = Model.Event;
+    ViewData["Title"] = e.Name;
+    var past = e.EventDate < DateTime.Now;
+}
+<a asp-action="Index" class="small">&larr; Back to events</a>
+
+<section class="rd-hero mt-3">
+    @if (!string.IsNullOrWhiteSpace(e.BannerUrl))
+    {
+        <img src="@e.BannerUrl" alt="Banner for @e.Name" class="rd-hero-img" />
+    }
+    else
+    {
+        <div class="rd-hero-img rd-event-placeholder" aria-hidden="true"></div>
+    }
+    <div class="rd-hero-overlay">
+        <div class="rd-event-type">@e.EventType</div>
+        <h1 class="rd-hero-title">@e.Name</h1>
+    </div>
+</section>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-7">
+        <div class="rd-panel">
+            <h2 class="rd-h2">About this event</h2>
+            <p class="rd-prose">@(string.IsNullOrWhiteSpace(e.Description) ? "The organiser hasn't added a description yet." : e.Description)</p>
+            <dl class="rd-facts">
+                <div><dt>Date</dt><dd>@Fmt.DateTimeLong(e.EventDate)</dd></div>
+                <div><dt>Location</dt><dd>@e.Location</dd></div>
+                <div><dt>Distance</dt><dd>@Fmt.Distance(e.DistanceKm)</dd></div>
+                <div><dt>Type</dt><dd>@e.EventType</dd></div>
+                @if (!string.IsNullOrWhiteSpace(e.OrganiserName))
+                {
+                    <div><dt>Organiser</dt><dd>@e.OrganiserName</dd></div>
+                }
+            </dl>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="rd-panel">
+            <h2 class="rd-h2">Categories</h2>
+            @if (e.Categories.Count == 0)
+            {
+                <p class="text-muted mb-0">The organiser hasn't added categories yet, so enrolment isn't open.</p>
+            }
+            else if (Model.MyEnrolment is not null)
+            {
+                <p>You're enrolled in <strong>@Model.MyEnrolment.CategoryName</strong>.</p>
+                <p class="mb-3">Status: <partial name="_Status" model="Model.MyEnrolment.Status" /></p>
+                <a asp-action="MyEnrolments" class="btn btn-outline-dark btn-sm">See my enrolments</a>
+            }
+            else if (past)
+            {
+                <p class="text-muted mb-0">This event has finished, so enrolment is closed.</p>
+            }
+            else
+            {
+                <form asp-action="Enrol" method="post" novalidate>
+                    <input type="hidden" name="eventId" value="@e.Id" />
+                    <fieldset>
+                        <legend class="visually-hidden">Choose a category</legend>
+                        <div class="rd-cat-list">
+                            @foreach (var c in e.Categories)
+                            {
+                                <label class="rd-cat">
+                                    <input type="radio" name="categoryId" value="@c.Id" required />
+                                    <span><strong>@c.Name</strong><small>@c.Describe()</small></span>
+                                </label>
+                            }
+                        </div>
+                    </fieldset>
+                    <button type="submit" class="btn btn-rd-primary w-100 mt-3">Enrol now</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

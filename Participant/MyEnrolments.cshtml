@@ -1,0 +1,39 @@
+@model List<EnrolmentDto>
+@{ ViewData["Title"] = "My enrolments"; }
+<div class="rd-pagehead">
+    <h1 class="rd-h1">My enrolments</h1>
+    <p class="text-muted mb-0">Every event you've entered and where each entry stands.</p>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="rd-empty">
+        <h2 class="rd-h2">You haven't enrolled in anything yet</h2>
+        <p class="text-muted">Pick a race and choose a category to get started.</p>
+        <a asp-action="Index" class="btn btn-rd-primary">Find events</a>
+    </div>
+}
+else
+{
+    <div class="rd-panel p-0">
+        <div class="table-responsive">
+            <table class="table rd-table align-middle mb-0">
+                <thead>
+                    <tr><th scope="col">Event</th><th scope="col">Date</th><th scope="col">Category</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr>
+                </thead>
+                <tbody>
+                @foreach (var en in Model)
+                {
+                    <tr>
+                        <td><strong>@en.EventName</strong></td>
+                        <td>@Fmt.Date(en.EventDate)</td>
+                        <td>@en.CategoryName</td>
+                        <td><partial name="_Status" model="en.Status" /></td>
+                        <td class="text-end"><a asp-action="Details" asp-route-id="@en.EventId" class="btn btn-outline-dark btn-sm">View</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

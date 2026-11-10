@@ -1,0 +1,59 @@
+@model ResultsEntryVm
+@{ ViewData["Title"] = "Results"; }
+<a asp-action="Events" class="small">&larr; Back to my events</a>
+<div class="rd-pagehead mt-2">
+    <h1 class="rd-h1">Results</h1>
+    <p class="text-muted mb-0">@Model.Event.Name &middot; @Fmt.Date(Model.Event.EventDate)</p>
+</div>
+
+@if (!Model.EventHasEnded)
+{
+    <div class="rd-empty">
+        <h2 class="rd-h2">This event hasn't finished yet</h2>
+        <p class="text-muted mb-0">You can enter results after @Fmt.DateTimeLong(Model.Event.EventDate).</p>
+    </div>
+}
+else if (Model.Rows.Count == 0)
+{
+    <div class="rd-empty">
+        <h2 class="rd-h2">No runners to record</h2>
+        <p class="text-muted mb-0">Results can be entered for runners who enrolled in this event.</p>
+    </div>
+}
+else
+{
+    <form asp-action="Results" asp-route-eventId="@Model.Event.Id" method="post" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger rd-alert"></div>
+        <div class="rd-panel p-0">
+            <div class="table-responsive">
+                <table class="table rd-table align-middle mb-0">
+                    <thead><tr><th scope="col">Participant</th><th scope="col">Category</th><th scope="col" style="width:20%">Finish time</th><th scope="col" style="width:15%">Position</th></tr></thead>
+                    <tbody>
+                    @for (var i = 0; i < Model.Rows.Count; i++)
+                    {
+                        <tr>
+                            <td class="fw-semibold">
+                                @Model.Rows[i].ParticipantName
+                                <input type="hidden" name="rows[@i].EnrolmentId" value="@Model.Rows[i].EnrolmentId" />
+                            </td>
+                            <td>@Model.Rows[i].CategoryName</td>
+                            <td>
+                                <input name="rows[@i].FinishTime" value="@Model.Rows[i].FinishTime" class="form-control" placeholder="hh:mm:ss" aria-label="Finish time for @Model.Rows[i].ParticipantName" inputmode="numeric" />
+                                <span class="rd-field-error" data-valmsg-for="rows[@i].FinishTime">@Html.ValidationMessage("rows[" + i + "].FinishTime")</span>
+                            </td>
+                            <td>
+                                <input name="rows[@i].Position" value="@Model.Rows[i].Position" class="form-control" type="number" min="1" aria-label="Position for @Model.Rows[i].ParticipantName" />
+                                <span class="rd-field-error">@Html.ValidationMessage("rows[" + i + "].Position")</span>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3 mt-4">
+            <button type="submit" class="btn btn-rd-primary">Publish results</button>
+            <span class="small text-muted">Leave a row empty to skip that runner. Published results show on each runner's My results page.</span>
+        </div>
+    </form>
+}
