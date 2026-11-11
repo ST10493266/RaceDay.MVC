@@ -1,5 +1,8 @@
 # RaceDay MVC (Part 3)
 
+YouTube link:
+https://youtu.be/tYnAPrphtP0 
+
 ASP.NET Core 8 MVC front end for the RaceDay platform. It talks to the Part 2 REST API for **all** data and file
 handling. It has no database access, no business logic and no Azure SDK.
 
